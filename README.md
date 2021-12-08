@@ -4,6 +4,9 @@ SQLITE3 CRUD Shell
 
 # USAGE
 Clone the repo from github
+
 git clone https://github.com/cespavtech/sqlite3_crud
+
 cd sqlite3_crud
+
 main.py
