@@ -2,11 +2,11 @@
 SQLITE3 CRUD Shell
 # Python 3.9
 
-#USAGE
+# USAGE
 Clone the repo from github
-#LINK
+# LINK
 git clone https://github.com/cespavtech/sqlite3_crud
-#CWD
+# CWD
 cd sqlite3_crud
-#Run Main
+# Run Main
 main.py
