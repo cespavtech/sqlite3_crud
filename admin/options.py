@@ -20,7 +20,7 @@ def loop(cmd, tab = 0):
 		messages.select_option(username)
 		print(messages.intro_user)
 		print("[ " + cmd_name + "~]: Select")
-		options.guess_window(tab, username)
+		options.guess_window(1, username) #The tab will be set by the processing functions in live mode!
 		admin_options.loop([input(messages.cmd_prompt), auth, username], tab)
 	else:
 		messages.invalid_comand(cmd_raw)
