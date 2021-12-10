@@ -72,7 +72,7 @@ It can be any fo the following depending on the item used with
 
 Can be any of below
 
-show
+<h4>show</h4>
 
 Display specific item data (no analysis)<br>
 <h4>Examples</h4>
@@ -81,7 +81,7 @@ Above comand will display data for user with email address example@mail.com<br>
 show -c -ci 3<br>
 Above comand will display data for course with id 3 in the dabase table
 
-report
+<h4>report</h4>
 
 Display analitical overview ot specific item<br>
 <h4>Examples</h4>
@@ -89,14 +89,14 @@ report -u -ue example@mail.com<br>
 Above comand will display report for user with email exmaple@mail.com<br>
 This report includes, % of attended modules/sessions hours for students and workload for staffs
 
-update
+<h4>update<h4>
 
 Update specific item's data<br>
 <h4>Examples</h4>
 update -u -ue example@mail1.com -un Abdirahim Abdi -ua staff<br>
 Above comand will update names, email and account type of user with 
 
-create
+  <h4>create</h4>
 
 Create new item<br>
 <h4>Examples</h4>
@@ -105,7 +105,7 @@ Above comand will create a new student account if no user with example@mail.com 
 Keep close look at how we passed other arguments, all arguments are optional except -ue (email address)<br>
 If a value is missing and required, you will be prompted to enter it
 
-delete
+<h4>delete</h4>
 
 Delete an item<br>
 <h4>Examples</h4>
@@ -113,7 +113,7 @@ delete -u -ue example@mail.com -force<br>
 This example will delete a user with email address example@mail.com<br>
 If the -force argument is not passed, you will be prompted to confirm user deletion along with the user's data (e.g. names)
 
-assign
+<h4>assign</h4>
 
 Assign an item to other item (e.g. module to course or course to semester)<br>
 <h4>Examples</h4>
@@ -123,6 +123,7 @@ assign -m -mi 3 -cs sem_ce2<br>
 Above comand will add module with id 3 to course with slug sem_c2
 
 # HELP
+  
 use -h to display this docs on your terminal<br>
 or use -h comand to display help/doc about specific comand<br>
 <h4>Examples</h4>
