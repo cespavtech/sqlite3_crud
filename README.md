@@ -92,9 +92,10 @@ This report includes, % of attended modules/sessions hours for students and work
 <h4>update<h4>
 
 Update specific item's data<br>
+Please remember the first argument is used to refer to item (-ue to update user data using email)
 <h4>Examples</h4>
 update -u -ue example@mail1.com -un Abdirahim Abdi -ua staff<br>
-Above comand will update names, email and account type of user with 
+Above comand will update names and account type of user with email address example1.com
 
   <h4>create</h4>
 
