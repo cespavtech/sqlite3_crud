@@ -52,10 +52,9 @@ We will guess the user account type to display the data in appropriate way
 
 def guess_modules(user_modules):
 	#Print modules list if any!
-	if len() < 1:
+	if len(user_modules) < 1:
 		#No modules!
 		print("No Modules found for this user....")
 		return
 
 	#Load modules data...
-	
