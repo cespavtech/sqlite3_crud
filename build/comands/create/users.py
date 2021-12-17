@@ -25,6 +25,10 @@ from vendor.views.core import shell_prompts as shell_displays
 #Shell clobal options [e.g. q/Q for quit]
 from build.core import shell_options as shell_choice
 
+#Password handling
+from passlib.hash import bcrypt
+from getpass import getpass
+
 
 """
 
@@ -33,10 +37,15 @@ def boot(userid, cmd):
 
 	#New user profile
 	new_profile = {}
+
 	#Current action permissions
-	allow = user_permission.allowed(user_permission.check_permission(userid))
+	allow = user_permission.allowed(user_permission.check_permission(userid), 'new')
+
 	#Permission
 	perm = user_permission.check_permission(userid)
+
+	#Set password hasher
+	hasher = bcrypt.using(rounds=13)  # Make it slower
 	
 	#Confirm allow
 	if not allow:
@@ -77,7 +86,16 @@ def boot(userid, cmd):
 				shell_choice.is_cancel(userid, cmd)
 				new_profile[filed_lists[i]] = cmd
 
-	#End updating new user profile
+	#Check wether selected account type is valid!
+
+	account_types = user_permission.prevs
+
+	if not new_profile['account'] in account_types:
+		#Invalid account type selected!
+		print(error_displays.invalid_account_type)
+		return
+
+	#End validating new user profile
 
 	"""
 	=====================
@@ -89,7 +107,37 @@ def boot(userid, cmd):
 
 	"""
 
+	#Inform user account creation
 	print("Creating new user as " + new_profile['name'])
+
+	#Hash the password for storage
+	hashed_password = hasher.hash(new_profile['password'])
+	#Verify with hasher.verify(password, hashed_password)
+
+	conn = config.con #Establish connection to the database!
+	cur = conn.cursor()
+
+	#Check email availability!
+
+	sql = '''SELECT id FROM users WHERE email=?'''
+
+	cur.execute(sql, [new_profile['email']])
+
+	user_row = cur.fetchall()
+
+	#Is user found!???
+	if len(user_row) > 0:
+		print(error_displays.email_registered)
+		return
+
+	#The sql query
+	sql = ''' INSERT INTO users(name, email, password, account)
+              VALUES(?, ?, ?, ?) '''
+	user_data = [new_profile['name'], new_profile['email'], hashed_password, new_profile['account']]
+	cur.execute(sql, user_data)
+	conn.commit()
+    #Return newly created user
+
 	print(new_profile)
 
 

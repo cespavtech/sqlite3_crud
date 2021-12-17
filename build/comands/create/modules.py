@@ -34,7 +34,7 @@ def boot(userid, cmd):
 	#New module profile
 	new_profile = {}
 	#Current action permissions
-	allow = user_permission.allowed(user_permission.check_permission(userid))
+	allow = user_permission.allowed(user_permission.check_permission(userid), 'new')
 	#Permission
 	perm = user_permission.check_permission(userid)
 	
@@ -90,6 +90,117 @@ def boot(userid, cmd):
 	"""
 
 	print("Creating new module as " + new_profile['name'])
+
+	#Check name availability
+
+	conn = config.con #Establish connection to the database!
+	cur = conn.cursor()
+
+	#Check name availability!
+
+	sql = '''SELECT id FROM modules WHERE name=?'''
+
+	cur.execute(sql, [new_profile['name']])
+
+	item_row = cur.fetchall()
+
+	if len(item_row) > 0:
+		#Name taken
+		print(error_displays.no_name)
+		return
+
+	#Check slug availability!
+
+	sql = '''SELECT id FROM modules WHERE slug=?'''
+
+	cur.execute(sql, [new_profile['slug']])
+
+	item_row = cur.fetchall()
+
+	if len(item_row) > 0:
+		#Slug taken
+		print(error_displays.no_slug)
+		return
+
+	#All is well, create new item
+
+	#Update module tutor with uiser id
+
+	tutor_guess = new_profile['tutor']
+	sql = '''SELECT id FROM users WHERE id=? and account =? OR email=? and account =?'''
+
+	cur.execute(sql, [tutor_guess, 'staff', tutor_guess, 'staff'])
+
+	tutor_row = cur.fetchall()
+
+	if len(tutor_row) < 1:
+		#No tutor found!
+		print(error_displays.no_account)
+		return
+	#Update with id
+	new_profile['tutor'] = tutor_row[0][0]
+
+	#Update room with room id
+	room_guess = new_profile['room']
+	sql = '''SELECT id FROM rooms WHERE id=? OR slug=?'''
+
+	cur.execute(sql, [room_guess, room_guess])
+
+	room_row = cur.fetchall()
+
+	if len(room_row) < 1:
+		#No tutor found!
+		print(error_displays.no_item)
+		return
+	#Update with id
+	new_profile['room'] = room_row[0][0]
+
+	#Update course with course id
+	course_guess = new_profile['course']
+	sql = '''SELECT id FROM courses WHERE id=? OR slug=?'''
+
+	cur.execute(sql, [course_guess, course_guess])
+
+	course_row = cur.fetchall()
+
+	if len(course_row) < 1:
+		#No tutor found!
+		print(error_displays.no_item)
+		return
+	#Update with id
+	new_profile['course'] = course_row[0][0]
+
+	#Update week day with full name
+	week_days = items.week_days
+	if not new_profile['day'] in week_days:
+		#User selected invalid day!
+		print(error_displays.no_item)
+		return
+
+	#Update with full day name
+	new_day = week_days[new_profile['day']]
+	new_profile['day'] = new_day
+
+
+	sql = '''INSERT INTO modules(name, slug, tutor, start, end, day, cat, room, course)
+	VALUES(?,?,?,?,?,?,?,?,?)'''
+
+	cur.execute(sql, [new_profile['name'], 
+		new_profile['slug'], 
+		new_profile['tutor'], 
+		new_profile['start'],
+		new_profile['end'],
+		new_profile['day'],
+		new_profile['cat'],
+		new_profile['room'],
+		new_profile['course']])
+
+	conn.commit()
+
+	#Inform created
+	print("New module created with success")
+
+	#Display newly created module data
 	print(new_profile)
 
 

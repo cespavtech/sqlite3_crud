@@ -26,6 +26,9 @@ from build.comands.update import guess as update_data
 #Guess data to delete
 from build.comands.delete import guess as delete_data
 
+#Guess data to assign
+from build.comands.assign import guess as assign_data
+
 
 """
 
@@ -54,6 +57,10 @@ def boot(userid, choice, cmd):
 		#Update data!
 		update_data.start_guess(userid, new_cmd)
 	elif choice == "del":
+		#Delete data
 		delete_data.start_guess(userid, new_cmd)
+	elif choice == "ass":
+		#Assign data
+		assign_data.start_guess(userid, new_cmd)
 	else:
 		shell_displays.invalid_comand(new_cmd)

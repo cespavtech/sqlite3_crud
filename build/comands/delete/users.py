@@ -28,7 +28,10 @@ from vendor.views.core import shell_prompts as shell_displays
 """
 def boot(userid, cmd):
 	#Permissions
-	allow = user_permission.allowed(user_permission.check_permission(userid))
+	allow = user_permission.allowed(user_permission.check_permission(userid), 'del')
+
+	#Permission
+	perm = user_permission.check_permission(userid)
 
 	#Validate comand arguments
 	if len(cmd) < 3:
@@ -75,7 +78,53 @@ def boot(userid, cmd):
 
 	"""
 
+	#Inform accoutn deletion
 	print("Deleting user using " + keyw + " as user " + field)
+
+	conn = config.con #Establish connection to the database!
+	cur = conn.cursor()
+
+	#Check user availability!
+
+	sql = "SELECT id FROM users WHERE " + field + "=?"
+
+	cur.execute(sql, [keyw])
+
+	user_row = cur.fetchall()
+
+	#Is user found!???
+	if len(user_row) < 1:
+		print(error_displays.no_account)
+		return
+
+
+	#User is found!
+
+	#Check wether its current user accoutn being deleted!
+	if user_row[0][0] == userid:
+		#Current accoutn deletion
+		print("You cannot delete your own account while logged in")
+		return
+
+	#Confirm account deletion
+
+	shell_displays.confirm_action()
+	shell_displays.confirm_action(True)
+	print("The user with [" + field + "] " + keyw + " will be deleted")
+	is_confirm = input(shell_displays.cmd_user(perm))
+
+	if is_confirm in ('y', 'Y'):
+		#User just confirmed account deletion
+		#Delete account
+		sql = "DELETE FROM users WHERE " + field + "=?"
+		cur.execute(sql, [keyw])
+		conn.commit()
+
+		print("User account deleted successfully!")
+	else:
+		print("Cancelled!")
+
+
 
 
 

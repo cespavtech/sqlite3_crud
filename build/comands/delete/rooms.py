@@ -28,7 +28,10 @@ from vendor.views.core import shell_prompts as shell_displays
 """
 def boot(userid, cmd):
 	#Permissions
-	allow = user_permission.allowed(user_permission.check_permission(userid))
+	allow = user_permission.allowed(user_permission.check_permission(userid), 'del')
+
+	#Permission
+	perm = user_permission.check_permission(userid)
 
 	#Validate comand arguments
 	if len(cmd) < 3:
@@ -76,6 +79,46 @@ def boot(userid, cmd):
 	"""
 
 	print("Deleting room using " + keyw + " as room " + field)
+
+	conn = config.con #Establish connection to the database!
+	cur = conn.cursor()
+
+	#Check item availability!
+
+	sql = "SELECT id FROM rooms WHERE " + field + "=?"
+
+	cur.execute(sql, [keyw])
+
+	item_row = cur.fetchall()
+
+	#Is course found!???
+	if len(item_row) < 1:
+		print(error_displays.no_item)
+		return
+
+
+	#Course is found!
+	item_id = item_row[0][0]
+
+	#Confirm course deletion
+
+	shell_displays.confirm_action()
+	shell_displays.confirm_action(True)
+	print("The room with [" + field + "] " + keyw + " will be deleted")
+	is_confirm = input(shell_displays.cmd_user(perm))
+
+	if is_confirm in ('y', 'Y'):
+		#User just confirmed room deletion
+		#Delete room
+
+		sql = "DELETE FROM rooms WHERE " + field + "=?"
+		cur.execute(sql, [keyw])
+		conn.commit()
+		#Room deleted!
+
+		print("Room deleted successfully!")
+	else:
+		print("Cancelled!")
 
 
 

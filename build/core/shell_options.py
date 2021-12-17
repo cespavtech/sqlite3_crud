@@ -48,15 +48,15 @@ once, logged in the function used is user_help
 
 """
 def is_help(cmd):
-	#Check wether user entered q/Q
-	if '-h' in cmd:
+	#Check wether user entered -h
+	if cmd in ('-h'):
 		print(shell_displays.help_option)
-		exit()
+		return
 
 #Help option [./ -h]
 def user_help(userid, cmd):
 	#Check wether user entered q/Q
-	if '-h' in cmd:
+	if cmd.startswith('-h'):
 		print(shell_displays.help_option)
 
 		#Process comands futher

@@ -34,7 +34,7 @@ def boot(userid, cmd):
 	#New course profile
 	new_profile = {}
 	#Current action permissions
-	allow = user_permission.allowed(user_permission.check_permission(userid))
+	allow = user_permission.allowed(user_permission.check_permission(userid), 'new')
 	#Permission
 	perm = user_permission.check_permission(userid)
 	
@@ -90,6 +90,51 @@ def boot(userid, cmd):
 	"""
 
 	print("Creating new course as " + new_profile['name'])
+
+	#Check course name availability
+
+	conn = config.con #Establish connection to the database!
+	cur = conn.cursor()
+
+	#Check name availability!
+
+	sql = '''SELECT id FROM courses WHERE name=?'''
+
+	cur.execute(sql, [new_profile['name']])
+
+	item_row = cur.fetchall()
+
+	if len(item_row) > 0:
+		#Name taken
+		print(error_displays.no_name)
+		return
+
+	#Check slug availability!
+
+	sql = '''SELECT id FROM courses WHERE slug=?'''
+
+	cur.execute(sql, [new_profile['slug']])
+
+	item_row = cur.fetchall()
+
+	if len(item_row) > 0:
+		#Slug taken
+		print(error_displays.no_slug)
+		return
+
+	#All is well, create new course
+
+	sql = '''INSERT INTO courses(name, slug)
+	VALUES(?,?)'''
+
+	cur.execute(sql, [new_profile['name'], new_profile['slug']])
+
+	conn.commit()
+
+	#Inform created
+	print("New course created with success")
+
+	#Display newly created course data
 	print(new_profile)
 
 

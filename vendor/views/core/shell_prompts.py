@@ -176,3 +176,18 @@ def invalid_args(cmd):
 	print("*" * 30)
 	print("[~ " + str(cmd) + " ~]: Invalid/few arguments passed!")
 	print("*" * 30)
+
+
+"""
+Confirm user action
+"""
+
+def confirm_action(action = False):
+	if action:
+		print("""
+***********************
+CONFIRMATION REQUIRED!
+***********************
+""")
+	else:
+		print("Enter y/Y to confirm\nEnter any key to cancel")

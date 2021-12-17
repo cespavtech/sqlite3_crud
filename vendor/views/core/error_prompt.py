@@ -15,3 +15,114 @@ access_denied = "Access denied!"
 
 #Account login disbaled for current user
 login_denied = "You cannot login to that account at this time!"
+
+#When creating new users, if the email has already been registered,
+#We will render this view
+
+email_registered = """
+***************
+ EMAIL TAKEN!
+***************
+
+That email has already been registered
+Please try again using another email address
+You can also reset user password if the user is locked out of their account
+
+use -h update
+to learn how to update user login passwords
+"""
+
+
+#When performing actions on user accounts,
+#If no user is found matching the search creteria used
+#We will render this view
+
+no_account = """
+*******************
+ NO ACCOUNT FOUND!
+*******************
+
+No user account was found matching
+Please try again with the correct credentials
+Recomended to use email or id to select users
+"""
+
+#When performing actions on items,
+#If no item is found matching the search creteria used
+#We will render this view
+
+no_item = """
+*******************
+ NO ITEM FOUND!
+*******************
+
+No item was found matching
+Please try again with the correct credentials
+Recomended to use id or slug when selecting items
+"""
+
+#When creating new users if the selected account type is invalid,
+#We will render this view
+
+invalid_account_type = """
+*******************
+ INVALID CHOICE!
+*******************
+
+The user account type you selected is invalid
+please check typo mistakes and try again
+Available choices are
+
+admin     =>  admin account
+staff         =>  staff account
+student  => student account
+"""
+
+#When loging in users, if email/password combinations are not valid,
+#We will render this view
+
+wrong_login_combination = """
+*******************
+ LOGIN FAILLED!
+*******************
+
+Wrong username/password combinations
+please check typo mistakes and try again
+"""
+
+#When creating new items if the name has already been used,
+#We will render this view
+
+no_name = """
+*******************
+ NAME TAKEN!
+*******************
+
+An item with the name you provided exists
+please try again with a different name
+"""
+
+#When creating new items if the slug has already been used,
+#We will render this view
+
+no_slug = """
+*******************
+ SLUG TAKEN!
+*******************
+
+An item with the slug you provided exists
+please try again with a different slug
+"""
+
+#When displaying item profile,
+#If the field in config file is not found in the sql returned data,
+#We will rendor this error view
+
+table_field_not_found = """
+========================
+Field not found!
+========================
+
+Once of the item profile data is missing!
+Contact the administrator to fix this issue...
+"""

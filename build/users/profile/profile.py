@@ -7,6 +7,9 @@
 
 """
 
+#Database configs
+import config
+
 
 """
 Return current user profile data
@@ -14,8 +17,22 @@ Return current user profile data
 
 """
 def current_user(userid):
-	user_data = [1, 'Abdirahim Abdi', 'connectabduu@gmail.com']
 
+	user_data = []
+
+	conn = config.con #Establish connection to the database!
+	cur = conn.cursor()
+
+	#Fetch user from database!
+
+	sql = "SELECT id FROM users WHERE email=?"
+
+	cur.execute(sql, [username])
+
+	user_row = cur.fetchall()
+
+	user_data = user_row[0]
+	
 	return user_data
 
 
@@ -24,5 +41,20 @@ Get user ID
 
 """
 def user_id(username):
-	userid = 1
+
+	conn = config.con #Establish connection to the database!
+	cur = conn.cursor()
+
+	#Fetch user from database!
+
+	sql = "SELECT id FROM users WHERE email=?"
+
+	cur.execute(sql, [username])
+
+	user_row = cur.fetchall()
+
+	#Assign the id from database
+	userid = user_row[0][0]
+
+	#Return the fetched id
 	return userid

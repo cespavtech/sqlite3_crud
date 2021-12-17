@@ -6,41 +6,13 @@
 @param userid > Current user ID in users table
 
 """
+
+#Database configs
+import config
+
+#User profile for userid
+
 from build.users.profile import profile as user_profile
-
-
-
-
-"""
-
-"""
-def allowed(perm):
-	#Check wether current user can perform this action
-	perm_list = prevs
-
-	#Check wether current user role is present
-	if perm in perm_list:
-		#Found!
-		current_perm = perm_list[perm]
-		if current_perm['disp']['all'] == 1:
-			return 1
-
-
-
-
-"""
-#New user permission check
-@param admin 
-@param student
-@param staff
-"""
-def check_permission(userid):
-	admin = "admin"
-	student = "student"
-	staff = "staff"
-
-	#Return new permission
-	return admin
 
 
 """
@@ -77,6 +49,10 @@ prevs = {
 	#Data to allow admin delete
 		"del" : {
 			"all" : 1
+		},
+	#Data to allow assign
+		"ass" : {
+			"all" : 1
 		}
 	},
 
@@ -96,6 +72,10 @@ prevs = {
 		},
 	#Data to allow staffs delete
 		"del" : {
+			"all" : 0
+		},
+	#Data to allow assign
+		"ass" : {
 			"all" : 0
 		}
 	},
@@ -121,8 +101,52 @@ prevs = {
 	#Data to allow students delete
 		"del" : {
 			"all" : 0
+		},
+	#Data to allow assign
+		"ass" : {
+			"all" : 0
 		}
 	}
 
 }
 
+
+
+"""
+
+"""
+def allowed(perm, action = 'disp', scope = 'all'):
+	#Check wether current user can perform this action
+	perm_list = prevs
+
+	#Check wether current user role is present
+	if perm in perm_list:
+		#Found!
+		current_perm = perm_list[perm]
+		return current_perm[action][scope]
+	return False
+
+
+
+
+"""
+#New user permission check
+@param admin 
+@param student
+@param staff
+"""
+def check_permission(userid):
+
+	conn = config.con #Establish connection to the database!
+	cur = conn.cursor()
+
+	#Fetch user from database!
+
+	sql = "SELECT account FROM users WHERE id=?"
+
+	cur.execute(sql, [userid])
+
+	user_row = cur.fetchall()
+
+	#Return new permission
+	return user_row[0][0]

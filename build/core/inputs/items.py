@@ -26,7 +26,8 @@ _windows = {
 	"show" : "disp",
 	"create" : "new",
 	"update" : "alt",
-	"delete" : "del"
+	"delete" : "del",
+	"assign" : "ass"
 }
 
 
@@ -61,15 +62,18 @@ Item Fields
 This corresponds with the table field in the database
 for selected item (e.g. users table identified by -u keyword)
 
+User modules table field is processed by the responsible module
+not configurable here...
 """
 
 item_fields = {
 #User table fields
 	"u" : {
 		"ui" : "id",
-		"ue" : "email",
 		"un" : "name",
-		"ua" : "account"
+		"ua" : "account",
+		"ue" : "email",
+		"up" : "password"
 	},
 #Courses table fields
 	"c" : {
@@ -84,7 +88,11 @@ item_fields = {
 		"ms" : "slug",
 		"mc" : "course",
 		"mr" : "room",
-		"ec" : "category"
+		"ec" : "cat",
+		"mb" : "start",
+		"me" : "end",
+		"mt" : "tutor",
+		"md" : "day"
 	},
 #Rooms table fields
 	"r" : {
@@ -94,3 +102,21 @@ item_fields = {
 	}
 }
 
+
+"""
+==============
+Week Days
+==============
+These are used to convert user comands to full week day name
+If the user choice for module day is not found here,
+Item not found error is rendered and the process is halted
+
+"""
+
+week_days = {
+	"mon" : "Monday",
+	"tue" : "Tuesday",
+	"wed" : "Wednusday",
+	"thu" : "Thursday",
+	"fri" : "Friday"
+}

@@ -5,7 +5,8 @@
 
 """
 
-
+#Database configs
+import config
 
 #Login display messages
 from vendor.views.login import login_prompt as login_displays
@@ -31,6 +32,8 @@ from build.users.profile import profile as user_profile
 #User Permissions
 from build.users.security import permissions as user_permission
 
+#Password handling
+from passlib.hash import bcrypt
 import getpass  # for password prompt
 
 def new_login():
@@ -58,6 +61,7 @@ def new_login():
 	login_status = proces_login(username, password)
 	if login_status == "acct":
 		#Wrong username/password
+		print(error_displays.wrong_login_combination)
 		new_login()
 	elif login_status == "den":
 		#Account login denied!
@@ -89,6 +93,9 @@ def proces_login(username, password):
 
 	"""
 
+	#Set password hasher
+	hasher = bcrypt.using(rounds=13)  # Make it slower
+
 	#Start processing login
 	print("Processing login...")
 
@@ -101,5 +108,31 @@ def proces_login(username, password):
 	#Check wether user found 
 	"""SQL"""
 
-	return success
+	conn = config.con #Establish connection to the database!
+	cur = conn.cursor()
+
+	#Check user availability!
+
+	sql = "SELECT password FROM users WHERE email=?"
+
+	cur.execute(sql, [username])
+
+	user_row = cur.fetchall()
+
+	#Check wether any account found!
+
+	if len(user_row) < 1:
+		#No account found!
+		return combination
+
+	#Run password verification
+	hashed_password = user_row[0][0]
+	login_success = hasher.verify(password, hashed_password)
+
+	if login_success:
+		#Passwords matched!
+		return success
+
+	#Passwords did not match!
+	return combination
 
