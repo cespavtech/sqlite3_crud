@@ -7,9 +7,6 @@ If current user has no preveleges, nothing is processed
 
 """
 
-#Database
-import config
-
 #Permissions
 from build.users.security import permissions as user_permission
 
@@ -24,6 +21,15 @@ from vendor.views.core import shell_prompts as shell_displays
 
 #Shell clobal options [e.g. q/Q for quit]
 from build.core import shell_options as shell_choice
+
+#Modules profile
+from build.core.controllers import modules as module_controller
+
+#Courses profile
+from build.core.controllers import courses as course_controller
+
+#Display module data views
+from vendor.views.actions.show import modules as modules_views
 
 
 """
@@ -90,118 +96,61 @@ def boot(userid, cmd):
 	"""
 
 	print("Creating new module as " + new_profile['name'])
+	#Name availability
+	print("Checking name availability for " + new_profile['name'] + "...")
+	item_row = module_controller.get_modules(new_profile['name'], "name")
 
-	#Check name availability
-
-	conn = config.con #Establish connection to the database!
-	cur = conn.cursor()
-
-	#Check name availability!
-
-	sql = '''SELECT id FROM modules WHERE name=?'''
-
-	cur.execute(sql, [new_profile['name']])
-
-	item_row = cur.fetchall()
-
-	if len(item_row) > 0:
+	#If name available
+	if item_row == False:
+		print("Name available as " + new_profile['name'] + "...")
+	elif len(item_row) > 0:
 		#Name taken
 		print(error_displays.no_name)
 		return
 
 	#Check slug availability!
+	print("Checking slug availability for " + new_profile['slug'] + "...")
+	item_row = module_controller.get_modules(new_profile['slug'], "slug")
 
-	sql = '''SELECT id FROM modules WHERE slug=?'''
-
-	cur.execute(sql, [new_profile['slug']])
-
-	item_row = cur.fetchall()
-
-	if len(item_row) > 0:
+	if item_row == False:
+		print("Slug available as " + new_profile['slug'] + "...")
+	elif len(item_row) > 0:
 		#Slug taken
-		print(error_displays.no_slug)
+		print(error_displays.no_name)
 		return
 
 	#All is well, create new item
 
-	#Update module tutor with uiser id
-
-	tutor_guess = new_profile['tutor']
-	sql = '''SELECT id FROM users WHERE id=? and account =? OR email=? and account =?'''
-
-	cur.execute(sql, [tutor_guess, 'staff', tutor_guess, 'staff'])
-
-	tutor_row = cur.fetchall()
-
-	if len(tutor_row) < 1:
-		#No tutor found!
-		print(error_displays.no_account)
-		return
-	#Update with id
-	new_profile['tutor'] = tutor_row[0][0]
-
-	#Update room with room id
-	room_guess = new_profile['room']
-	sql = '''SELECT id FROM rooms WHERE id=? OR slug=?'''
-
-	cur.execute(sql, [room_guess, room_guess])
-
-	room_row = cur.fetchall()
-
-	if len(room_row) < 1:
-		#No tutor found!
-		print(error_displays.no_item)
-		return
-	#Update with id
-	new_profile['room'] = room_row[0][0]
-
 	#Update course with course id
 	course_guess = new_profile['course']
-	sql = '''SELECT id FROM courses WHERE id=? OR slug=?'''
+	print("Searching for course as " + str(course_guess))
+	course_row = module_controller.get_course(course_guess)
 
-	cur.execute(sql, [course_guess, course_guess])
-
-	course_row = cur.fetchall()
+	#Have we got any result
+	if course_row == False:
+		#No course
+		print(error_displays.no_item)
+		return
 
 	if len(course_row) < 1:
-		#No tutor found!
+		#No course found!
 		print(error_displays.no_item)
 		return
 	#Update with id
+	print("Found course as " + str(course_row[0][1]))
+
 	new_profile['course'] = course_row[0][0]
 
-	#Update week day with full name
-	week_days = items.week_days
-	if not new_profile['day'] in week_days:
-		#User selected invalid day!
-		print(error_displays.no_item)
-		return
-
-	#Update with full day name
-	new_day = week_days[new_profile['day']]
-	new_profile['day'] = new_day
-
-
-	sql = '''INSERT INTO modules(name, slug, tutor, start, end, day, cat, room, course)
-	VALUES(?,?,?,?,?,?,?,?,?)'''
-
-	cur.execute(sql, [new_profile['name'], 
-		new_profile['slug'], 
-		new_profile['tutor'], 
-		new_profile['start'],
-		new_profile['end'],
-		new_profile['day'],
-		new_profile['cat'],
-		new_profile['room'],
+	module_saved = module_controller.save_module([new_profile['name'], 
+		new_profile['slug'],
 		new_profile['course']])
 
-	conn.commit()
-
 	#Inform created
-	print("New module created with success")
+	if module_saved:
+		print("New module created with success")
 
 	#Display newly created module data
-	print(new_profile)
+	modules_views.rendor(['profile_name', new_profile['name']])
 
 
 

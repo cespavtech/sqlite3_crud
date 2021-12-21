@@ -7,8 +7,6 @@ If current user has no preveleges, nothing is processed
 
 """
 
-#Database
-import config
 
 #Permissions
 from build.users.security import permissions as user_permission
@@ -24,6 +22,9 @@ from vendor.views.core import shell_prompts as shell_displays
 
 #Shell clobal options [e.g. q/Q for quit]
 from build.core import shell_options as shell_choice
+
+#User profile and id
+from build.core.controllers import users as user_controller
 
 #Password handling
 from passlib.hash import bcrypt
@@ -114,29 +115,18 @@ def boot(userid, cmd):
 	hashed_password = hasher.hash(new_profile['password'])
 	#Verify with hasher.verify(password, hashed_password)
 
-	conn = config.con #Establish connection to the database!
-	cur = conn.cursor()
-
 	#Check email availability!
-
-	sql = '''SELECT id FROM users WHERE email=?'''
-
-	cur.execute(sql, [new_profile['email']])
-
-	user_row = cur.fetchall()
-
-	#Is user found!???
-	if len(user_row) > 0:
+	if user_controller.get_profile(new_profile['email']) != False:
 		print(error_displays.email_registered)
 		return
 
-	#The sql query
-	sql = ''' INSERT INTO users(name, email, password, account)
-              VALUES(?, ?, ?, ?) '''
-	user_data = [new_profile['name'], new_profile['email'], hashed_password, new_profile['account']]
-	cur.execute(sql, user_data)
-	conn.commit()
-    #Return newly created user
+	user_saved = user_controller.save_user([new_profile['name'], new_profile['email'], hashed_password, new_profile['account']])
+	#Is user saved!
+	if user_saved:
+		#Success!
+		print("User created with success...")
+	else:
+		print(user_saved)
 
 	print(new_profile)
 

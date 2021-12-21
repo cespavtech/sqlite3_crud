@@ -44,15 +44,15 @@ def new_login():
 	"""
 
 	#Start new session
-	print(shell_displays.quit_option)
 	print (login_displays.request_username)
-	username = input()
+	print(shell_displays.quit_option)
+	username = input('[ ~guest ~]: ')
 
 	#Check wether is quit!
 	shell_choice.is_quit(username)
 
-	print(shell_displays.quit_option)
 	print(login_displays.request_password)
+	print(shell_displays.quit_option)
 	password = getpass.getpass()
 
 	#Check wether is quit!

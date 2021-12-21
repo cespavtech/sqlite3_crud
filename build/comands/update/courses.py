@@ -109,7 +109,7 @@ def boot(moduleid, cmd):
 
 	item_rows = cur.fetchall()
 
-	#Is user found!???
+	#Is course found!???
 	if len(item_rows) < 1:
 		print(error_displays.no_item)
 		return

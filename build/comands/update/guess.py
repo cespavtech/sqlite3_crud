@@ -26,8 +26,11 @@ def start_guess(userid, cmd):
 	if active_item in item_list:
 		#Item found!
 		module_name = str(item_list[active_item])
-		new_module = __import__(module_name, globals(), locals(), [], 1)
-		new_module.boot(userid, cmd)
+		try:
+			new_module = __import__(module_name, globals(), locals(), [], 1)
+			new_module.boot(userid, cmd)
+		except Exception as e:
+			print(e)
 	else:
 		#Invalid arguments
 		shell_displays.invalid_args(cmd[0])

@@ -126,3 +126,71 @@ Field not found!
 Once of the item profile data is missing!
 Contact the administrator to fix this issue...
 """
+
+#When assigning new items to users,
+#If the item has already been assigned,
+#We will rendor this error view
+
+item_assigned = """
+========================
+Item Found
+========================
+
+This item has already been assigned to this user!
+Check typo mistakes and try again or try assigning another item...
+"""
+
+#When displaying module sessions,
+#If no sessions are found for current module,
+#We will rendor this error view
+
+no_session = """
+========================
+NO SESSIONS FOUND!
+========================
+
+There are no sessions for this module
+
+To create new sessions for this module, you can use;
+
+[ create -s]
+
+you can also parse as many arguments as you want
+Use -h -s to see available arguments
+
+"""
+
+#When displaying courses,
+#If no modules are found for current course,
+#We will rendor this error view
+
+no_module = """
+========================
+NO MODULES FOUND!
+========================
+
+There are no modules for this course
+
+To create new modules for this course, use;
+
+[ create -m]
+
+you can also parse as many arguments as you want
+Use -h -m to see available arguments
+
+"""
+
+#When assigning new items to users,
+#If the item has already been assigned,
+#We will rendor this error view
+
+no_comand = """
+========================
+Comand Not Found
+========================
+
+This comand cannot be used on this item
+Use -h [comand] to see available options
+"""
+
+

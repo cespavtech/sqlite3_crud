@@ -19,12 +19,17 @@ prompt = {
 		"name" : "Enter Module Name",
 		"slug" : "Enter Module Slug",
 		"course" : "Enter Module Course [ course slug or id ]",
-		"room" : "Enter Module Room [ room slug or id ]",
-		"cat" : "Category [ -h -m for help ]",
-		"tutor" : "Module Tutor [staff id or email]",
-		"start" : "Module Start Time [e.g. 10:00]",
-		"end" : "Module Finish Time [e.g. 12:00]",
-		"day" : "Module Week Day [e.g. mon]"
+		"cat" : "Category [ -h -m for help ]"
+	},
+
+	"sessions" : {
+		"slug" : "Enter Session Slug",
+		"module" : "Enter Session Module [ module slug or id ]",
+		"room" : "Enter Session Room [ room slug or id ]",
+		"tutor" : "Session Tutor [staff id or email]",
+		"start" : "Session Start Time [e.g. 10:00]",
+		"end" : "Session Finish Time [e.g. 12:00]",
+		"day" : "Session Week Day [e.g. mon]"
 	},
 
 	"room" : {

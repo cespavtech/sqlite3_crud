@@ -8,7 +8,8 @@ _items = {
 	"-u" : "Users",
 	"-c" : "Courses",
 	"-m" : "Modules",
-	"-r" : "Rooms"
+	"-r" : "Rooms",
+	"-s" : "Sessions"
 }
 
 
@@ -51,7 +52,8 @@ items = {
 	"u" : "users",
 	"c" : "courses",
 	"m" : "modules",
-	"r" : "rooms"
+	"r" : "rooms",
+	"s" : "sessions"
 }
 
 
@@ -86,19 +88,25 @@ item_fields = {
 		"mi" : "id",
 		"mn" : "name",
 		"ms" : "slug",
-		"mc" : "course",
-		"mr" : "room",
-		"ec" : "cat",
-		"mb" : "start",
-		"me" : "end",
-		"mt" : "tutor",
-		"md" : "day"
+		"mc" : "course"
 	},
 #Rooms table fields
 	"r" : {
 		"ri" : "id",
 		"rn" : "name",
 		"rs" : "slug"
+	},
+#Sessions tabel fields
+	"s" : {
+		"si" : "id",
+		"st" : "tutor",
+		"ss" : "start",
+		"se" : "end",
+		"sd" : "day",
+		"sr" : "room",
+		"sm" : "module",
+		"sc" : "cat",
+		"slug" : "slug"
 	}
 }
 

@@ -27,6 +27,8 @@ from vendor.views.core import shell_prompts as shell_displays
 #Shell clobal options [e.g. q/Q for quit]
 from build.core import shell_options as shell_choice
 
+#Time course or module assigned
+from datetime import datetime
 
 """
 
@@ -107,19 +109,79 @@ def boot(userid, cmd):
 	#New user permission
 	new_perm = user_permission.check_permission(new_userid)
 
+	#Item validation 
+	raw_keyw = cmd[4].split()
+
+	#Validation
+	if len(raw_keyw) < 2:
+		shell_displays.invalid_args(cmd[0])
+		return
+
+	keyw = raw_keyw[1]
+
+	#Check field to search in 
+
+	raw_field = raw_keyw[0]
+	filed_lists = items.item_fields[cmd[2]]
+
+	#Validation
+	if raw_field in filed_lists:
+		pass
+		field = filed_lists[raw_field]
+	else:
+		shell_displays.invalid_args(cmd[0])
+		return
+
 	if cmd[2] == 'c':
 		#Assigning course to user
 		print("Assigning course...")
-	elif cmd[2] == 'm':
-		print("Assigning modules...")
 
-		#Check wether the user to assign module to is a staff!
+		#Check scope to search course with
+		print("Checking course availability...")
 
-		if new_perm != 'staff':
-			#User to assign is not a staff,
-			#Return user not found error!
-			print(error_displays.no_account)
+		#Item availability!
+
+		sql = "SELECT id FROM courses WHERE " + field + "=?"
+
+		cur.execute(sql, [keyw])
+
+		item_rows = cur.fetchall()
+
+		#Is course found!???
+		if len(item_rows) < 1:
+			print(error_displays.no_item)
 			return
+		#Course found!
+		data_assign = "c"
+		data_id = item_rows[0][0]
+		print("Starting course assign process...")
+	elif cmd[2] == 'm':
+		print(error_displays.no_comand)
+		return
 
+	#Assign data
+	#We save new record into the user_modules or user_courses table
+	if data_assign == "c":
+		#Assigning course
+		#Save new course data if not found!
+		sql = "SELECT id FROM user_courses WHERE uid=? AND course=?"
+
+		cur.execute(sql, [new_userid, data_id])
+
+		item_rows = cur.fetchall()
+
+		if len(item_rows) > 0:
+			#Course already found!
+			print(error_displays.item_assigned)
+			return
+		#Course no exist, add new record!
+		date_added = datetime.timestamp(datetime.now())
+		#Convert with datetime.fromtimestamp(date_added)
+		sql = "INSERT INTO user_courses(uid, course, date_added) VALUES(?,?,?)"
+
+		cur.execute(sql, [new_userid, data_id, date_added])
+
+		conn.commit()
+		#Success!
 	print("New data assigned with success...")
 
