@@ -7,9 +7,6 @@ If current module has no preveleges, nothing is processed
 
 """
 
-#Database
-import config
-
 #Permissions
 from build.users.security import permissions as user_permission
 
@@ -22,6 +19,16 @@ from vendor.views.core import error_prompt as error_displays
 #Shell display messages
 from vendor.views.core import shell_prompts as shell_displays
 
+#User profile 
+from build.core.controllers import users as user_controller
+
+#Course profile
+from build.core.controllers import courses as course_controller
+
+#Modules profile
+from build.core.controllers import modules as module_controller
+
+
 
 """
 
@@ -32,9 +39,6 @@ def boot(userid, cmd):
 
 	#Permission
 	perm = user_permission.check_permission(userid)
-
-	conn = config.con #Establish connection to the database!
-	cur = conn.cursor()
 
 	#Validate comand arguments
 	if len(cmd) < 4:
@@ -107,91 +111,63 @@ def boot(userid, cmd):
 	#Update user with id
 	if 'tutor' in new_profile:
 		#Updating module tutor!
+		print("Checking staff availability...")
 		tutor_guess = new_profile['tutor']
-		sql = '''SELECT id FROM users WHERE id=? and account =? OR email=? and account =?'''
-
-		cur.execute(sql, [tutor_guess, 'staff', tutor_guess, 'staff'])
-
-		tutor_row = cur.fetchall()
+		tutor_row = user_controller.get_profile(tutor_guess)
+		#Is user found!
+		if tutor_row == False:
+			#No tutor found!
+			print(error_displays.no_account)
+			return
 
 		if len(tutor_row) < 1:
 			#No tutor found!
 			print(error_displays.no_account)
 			return
 		#Update with id
-		new_profile['tutor'] = tutor_row[0][0]
-
-	#Update room with id
-	if 'room' in new_profile:
-		#Updating room 
-		room_guess = new_profile['room']
-		sql = '''SELECT id FROM rooms WHERE id=? OR slug=?'''
-
-		cur.execute(sql, [room_guess, room_guess])
-
-		room_row = cur.fetchall()
-
-		if len(room_row) < 1:
-			#No tutor found!
-			print(error_displays.no_item)
-			return
-		#Update with id
-		new_profile['room'] = room_row[0][0]
+		print("Staff account found...")
+		new_profile['tutor'] = tutor_row[0]
 
 	#Update course with course id
 	if 'course' in new_profile:
+		print("Checking course availability...")
 		#Updating course
 		course_guess = new_profile['course']
-		sql = '''SELECT id FROM courses WHERE id=? OR slug=?'''
-
-		cur.execute(sql, [course_guess, course_guess])
-
-		course_row = cur.fetchall()
+		course_row = course_controller.get_courses(course_guess)
+		#Is course found?
+		if course_row == False:
+			#No course found!
+			print(error_displays.no_item)
+			return
 
 		if len(course_row) < 1:
-			#No tutor found!
+			#No course found!
 			print(error_displays.no_item)
 			return
 		#Update with id
+		print("Course found...")
 		new_profile['course'] = course_row[0][0]
 
-	#Update week day with full name
-	if 'day' in new_profile:
-		#Updating day!
-		week_days = items.week_days
-		if not new_profile['day'] in week_days:
-			#User selected invalid day!
-			print(error_displays.no_item)
-			return
-
-		#Update with full day name
-		new_day = week_days[new_profile['day']]
-		new_profile['day'] = new_day
-
 	#Item availability!
-
-	sql = "SELECT id FROM modules WHERE " + field + "=?"
-
-	cur.execute(sql, [keyw])
-
-	item_rows = cur.fetchall()
+	print("Checking module availability...")
+	item_rows = module_controller.get_modules(keyw, field)
 
 	#Is module found!???
-	if len(item_rows) < 1:
+	if item_rows == False:
 		print(error_displays.no_item)
 		return
 
+	if len(item_rows) < 1:
+		print(error_displays.no_item)
+		return
+	print("Module found...")
 	#Check name availability!
 	if 'name' in new_profile:
 		#Name being updated
-
-		sql = '''SELECT id FROM modules WHERE name=?'''
-
-		cur.execute(sql, [new_profile['name']])
-
-		item_row = cur.fetchall()
-
-		if len(item_row) > 0:
+		print("Checking module name availability...")
+		item_row = module_controller.get_modules(new_profile['name'], 'name')
+		#Is found?
+		if item_row != False:
 			#Name taken
 			print(error_displays.no_name)
 			return
@@ -199,18 +175,15 @@ def boot(userid, cmd):
 	#Check slug availability!
 	if 'slug' in new_profile:
 		#Slug being updated
-
 		if field != 'slug':
 			#Field not slug
-			sql = '''SELECT id FROM modules WHERE slug=?'''
+			print("Checking module slug availability...")
+			item_row = module_controller.get_modules(new_profile['slug'], 'slug')
 
-			cur.execute(sql, [new_profile['slug']])
-
-			item_row = cur.fetchall()
-
-			if len(item_row) > 0:
-				#Slug taken
-				print(error_displays.no_slug)
+			#Is found?
+			if item_row != False:
+				#Name taken
+				print(error_displays.no_name)
 				return
 
 	#All is well, update data
@@ -222,11 +195,10 @@ def boot(userid, cmd):
 			#Not id, update data
 			if i != field:
 				print("Updating module " + i + "...")
-				sql = "UPDATE modules SET " + i + " = ? WHERE id =?"
-				cur.execute(sql, [new_profile[i], item_id])
-				conn.commit()
-				#Updated!
-				print("Module " + i + " updated....")
+				updated = module_controller.update_module(i, new_profile[i], item_id)
+				if updated:
+					#Updated!
+					print("Module " + i + " updated....")
 
 	print("New module profile updated with success")
 

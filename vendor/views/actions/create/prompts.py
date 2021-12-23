@@ -18,8 +18,7 @@ prompt = {
 	"module" : {
 		"name" : "Enter Module Name",
 		"slug" : "Enter Module Slug",
-		"course" : "Enter Module Course [ course slug or id ]",
-		"cat" : "Category [ -h -m for help ]"
+		"course" : "Enter Module Course [ course slug or id ]"
 	},
 
 	"sessions" : {
@@ -29,7 +28,8 @@ prompt = {
 		"tutor" : "Session Tutor [staff id or email]",
 		"start" : "Session Start Time [e.g. 10:00]",
 		"end" : "Session Finish Time [e.g. 12:00]",
-		"day" : "Session Week Day [e.g. mon]"
+		"day" : "Session Week Day [e.g. mon]",
+		"cat" : "Session category [use 1 for on-campus or 2 for off-campus]"
 	},
 
 	"room" : {

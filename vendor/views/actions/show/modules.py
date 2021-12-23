@@ -24,34 +24,18 @@ def rendor(module_data):
 
 	#Display module name
 	if module_data[0] == "name":
-		print("""Module:				   """ + module_data[1])
+		print("""Module:				        """ + module_data[1])
 		return
 
-
-	#Display module category
-	if module_data[0] == "category":
-		category = module_data[1]
-		module_category = module_configs.categories
-		if category in module_category:
-			category = module_category[category]
-		print("""Event Category:				   """ + category)
-		return
 
 	#Display module name
 	if module_data[0] == "slug":
-		print("""Slug:				   """ + module_data[1])
+		print("""Slug:				             """ + module_data[1])
 		return
 
 	#Display module profile name
 	if module_data[0] == "profile_name":
 		print("*" * 50)
-		print("""Module:				   """ + module_data[1])
-		print("*" * 50)
-		return
-
-	#Display module profile name
-	if module_data[0] == "profile_name":
-		print("*" * 50)
-		print("""Module:				   """ + module_data[1])
+		print("""Module:				        """ + module_data[1])
 		print("*" * 50)
 		return

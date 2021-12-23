@@ -23,7 +23,24 @@ def get_room(key):
 			return False
 		return row[0]
 	except Exception as e:
-		return e
+		if e != False:
+			print(e)
+		return False
+
+
+def search_room(key, where='id'):
+	sql = '''SELECT * FROM rooms WHERE '''+ str(where) +'''=?'''
+	try:
+		cur.execute(sql, [key])
+		row = cur.fetchall()
+		if len(row) < 1:
+			#Nothing found!
+			return False
+		return row
+	except Exception as e:
+		if e != False:
+			print(e)
+		return False
 
 
 
@@ -37,5 +54,32 @@ def sessions(key):
 			return False
 		return row
 	except Exception as e:
-		print(e) #Coment this to turn off debugging
+		if e != False:
+			print(e) #Coment this to turn off debugging
+		return False
+
+
+def update_room(update, new_data, room):
+	sql = "UPDATE rooms SET " + update + " = ? WHERE id =?"
+	try:
+		cur.execute(sql, [new_data, room])
+		row = cur.fetchall()
+		if len(row) < 1:
+			#Nothing found!
+			return False
+		return row
+	except Exception as e:
+		if e != False:
+			print(e)
+		return False
+
+
+def save_room(data):
+	sql = '''INSERT INTO rooms(name, slug) VALUES(?,?)'''
+	try:
+		cur.execute(sql, data)
+		return True
+	except Exception as e:
+		if e != False:
+			print(e)
 		return False

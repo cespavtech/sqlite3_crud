@@ -24,7 +24,7 @@ def rendor(room_data):
 
 	#Display room name
 	if room_data[0] == "name":
-		print("""Room:				   """ + room_data[1])
+		print("""Room:				          """ + room_data[1])
 		return
 
 	#Display room slug
@@ -35,6 +35,6 @@ def rendor(room_data):
 	#Display room profile name
 	if room_data[0] == "profile_name":
 		print("*" * 50)
-		print("""Room:				   """ + room_data[1])
+		print("""Room:				          """ + room_data[1])
 		print("*" * 50)
 		return

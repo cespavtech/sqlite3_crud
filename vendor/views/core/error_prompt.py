@@ -61,6 +61,20 @@ Please try again with the correct credentials
 Recomended to use id or slug when selecting items
 """
 
+#When creating new sessions,
+#If the selected staff has run out of wrokload limit
+#We will render this view
+
+no_workload = """
+*******************
+ NO MORE WORKLOAD
+*******************
+
+The staff you selected has reached their maximum teaching hours
+Each staff can only teach eighteen (18) hours weekly on a basis
+You can free the staff by removing several sessions
+"""
+
 #When creating new users if the selected account type is invalid,
 #We will render this view
 
@@ -178,6 +192,21 @@ To create new modules for this course, use;
 you can also parse as many arguments as you want
 Use -h -m to see available arguments
 
+"""
+
+#When displaying users data,
+#If current user has no courses/modules,
+#We will rendor this error view
+
+no_course = """
+========================
+No Courses Found
+========================
+
+There are no courses found for this user,
+if this user is a student, you can use [assign] comand
+to assign new courses.
+If this account is admin, there is nothing to worry about
 """
 
 #When assigning new items to users,

@@ -9,9 +9,6 @@ Once the course has been removed, all the modules are also removed!
 
 """
 
-#Database
-import config
-
 #Permissions
 from build.users.security import permissions as user_permission
 
@@ -30,10 +27,34 @@ from build.core import shell_options as shell_choice
 #Time course or module assigned
 from datetime import datetime
 
+#To get room id
+from build.core.controllers import rooms as room_controller
+
+#Sessions controller file
+from build.core.controllers import sessions as session_controller
+
+#User profile and id
+from build.core.controllers import users as user_controller
+
+#Module profile and id
+from build.core.controllers import modules as module_controller
+
+#Course profile and id
+from build.core.controllers import courses as course_controller
+
 """
 
 """
 def boot(userid, cmd):
+	"""
+
+
+	"""
+	if not cmd[2] in ('c'):
+		#Invalid comand
+		print(error_displays.no_comand)
+		return
+
 	print("Assigning items to user...")
 	new_cmd = cmd
 	#Current action permissions
@@ -41,10 +62,6 @@ def boot(userid, cmd):
 
 	#Permission
 	perm = user_permission.check_permission(userid)
-
-
-	conn = config.con #Establish connection to the database!
-	cur = conn.cursor()
 
 	#Confirm allow
 	if not allow:
@@ -89,22 +106,18 @@ def boot(userid, cmd):
 		return
 
 	#Check user availability!
-
-	sql = "SELECT id FROM users WHERE " + field + "=?"
-
-	cur.execute(sql, [keyw])
-
-	user_row = cur.fetchall()
+	print("Checking user availability...")
+	user_row = user_controller.get_profile(keyw)
 
 	#Is user found!???
-	if len(user_row) < 1:
+	if user_row == False:
 		print(error_displays.no_account)
 		return
 
 
 	#User is found!
-
-	new_userid = user_row[0][0]
+	print("User profile found...")
+	new_userid = user_row[0]
 
 	#New user permission
 	new_perm = user_permission.check_permission(new_userid)
@@ -141,47 +154,35 @@ def boot(userid, cmd):
 
 		#Item availability!
 
-		sql = "SELECT id FROM courses WHERE " + field + "=?"
-
-		cur.execute(sql, [keyw])
-
-		item_rows = cur.fetchall()
+		item_rows = course_controller.get_courses(keyw, field)
 
 		#Is course found!???
-		if len(item_rows) < 1:
+		if item_rows == False:
 			print(error_displays.no_item)
 			return
 		#Course found!
+		print("Course profile found...")
 		data_assign = "c"
 		data_id = item_rows[0][0]
 		print("Starting course assign process...")
-	elif cmd[2] == 'm':
-		print(error_displays.no_comand)
-		return
 
 	#Assign data
 	#We save new record into the user_modules or user_courses table
 	if data_assign == "c":
 		#Assigning course
 		#Save new course data if not found!
-		sql = "SELECT id FROM user_courses WHERE uid=? AND course=?"
+		item_rows = user_controller.get_courses(new_userid)
 
-		cur.execute(sql, [new_userid, data_id])
-
-		item_rows = cur.fetchall()
-
-		if len(item_rows) > 0:
+		if item_rows != False:
 			#Course already found!
 			print(error_displays.item_assigned)
 			return
 		#Course no exist, add new record!
 		date_added = datetime.timestamp(datetime.now())
 		#Convert with datetime.fromtimestamp(date_added)
-		sql = "INSERT INTO user_courses(uid, course, date_added) VALUES(?,?,?)"
+		saved = user_controller.save_course([new_userid, data_id, date_added])
+		if saved:
+			#Success saving new user course
+			print("New data assigned with success...")
 
-		cur.execute(sql, [new_userid, data_id, date_added])
-
-		conn.commit()
-		#Success!
-	print("New data assigned with success...")
 

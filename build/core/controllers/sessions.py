@@ -23,7 +23,23 @@ def get_session(key):
 			return False
 		return row[0]
 	except Exception as e:
-		print(e)
+		if e != False:
+			print(e)
+		return False
+
+
+def search_session(key, where='id'):
+	sql = '''SELECT * FROM sessions WHERE '''+ str(where) +'''=?'''
+	try:
+		cur.execute(sql, [key])
+		row = cur.fetchall()
+		if len(row) < 1:
+			#Nothing found!
+			return False
+		return row
+	except Exception as e:
+		if e != False:
+			print(e)
 		return False
 
 
@@ -31,7 +47,7 @@ def get_session(key):
 
 """
 def module_sessions(module):
-	sql = '''SELECT * FROM sessions WHERE module=?'''
+	sql = '''SELECT * FROM sessions WHERE module=? ORDER BY id ASC'''
 	try:
 		cur.execute(sql, [module])
 		row = cur.fetchall()
@@ -40,8 +56,9 @@ def module_sessions(module):
 			return False
 		return row
 	except Exception as e:
-		print(e)
-		return e
+		if e != False:
+			print(e)
+		return False
 	
 
 """
@@ -49,13 +66,50 @@ def module_sessions(module):
 """
 def save_session(data):
 	#Save new session data!
-	sql = '''INSERT INTO sessions(tutor, day, start, end, room, module, slug)
-	VALUES(?,?,?,?,?,?,?)'''
+	sql = '''INSERT INTO sessions(tutor, day, start, end, room, module, slug, cat)
+	VALUES(?,?,?,?,?,?,?,?)'''
 
 	try:
 		cur.execute(sql, data)
 		conn.commit()
 		return True
 	except Exception as e:
-		print(e)
-		return e
+		if e != False:
+			print(e)
+		return False
+
+
+
+"""
+
+"""
+def update_session(update, new_data, session):
+	#Update session data!
+	sql = "UPDATE sessions SET " + update + " = ? WHERE id =?"
+	try:
+		cur.execute(sql, [new_data, session])
+		row = cur.fetchall()
+		if len(row) < 1:
+			#Nothing found!
+			return False
+		return row
+	except Exception as e:
+		if e != False:
+			print(e)
+		return False
+
+
+"""
+
+"""
+def delete_session(session):
+	#Update session data!
+	sql = "DELETE FROM sessions WHERE id=?"
+	try:
+		cur.execute(sql, [session])
+		conn.commit()
+		return True
+	except Exception as e:
+		if e != False:
+			print(e)
+		return False

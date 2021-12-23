@@ -24,7 +24,23 @@ def get_modules(key, where = "id"):
 		else:
 			return row
 	except Exception as e:
-		print("[~ ERROR ~]: " + str(e))
+		if e != False:
+			print(e)
+		return False
+
+def guess_modules(key):
+	sql = '''SELECT * FROM modules WHERE id=? OR slug=?'''
+	try:
+		cur.execute(sql, [key, key])
+		row = cur.fetchall()
+		if len(row) < 1:
+			#Nothing found!
+			return False
+		else:
+			return row
+	except Exception as e:
+		if e != False:
+			print(e)
 		return False
 
 def get_course(key):
@@ -38,7 +54,8 @@ def get_course(key):
 		else:
 			return row
 	except Exception as e:
-		print("[~ ERROR ~]: " + str(e))
+		if e != False:
+			print(e)
 		return False
 	
 
@@ -58,5 +75,21 @@ def save_module(data):
 		conn.commit()
 		return True
 	except Exception as e:
-		print(e)
+		if e != False:
+			print(e)
+		return False
+
+def update_module(update, new_data, module):
+	#Save new session data!
+	conn = config.con #Establish connection to the database!
+	cur = conn.cursor()
+	sql = "UPDATE modules SET " + update + " = ? WHERE id =?"
+
+	try:
+		cur.execute(sql, [new_data, module])
+		conn.commit()
+		return True
+	except Exception as e:
+		if e != False:
+			print(e)
 		return False

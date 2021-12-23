@@ -183,7 +183,7 @@ def boot(userid, cmd):
 				#Duration
 				sessions_views.rendor(["duration", i[3].split(":"), i[4].split(":")])
 				#Category
-				modules_views.rendor(['category', i[8]])
+				sessions_views.rendor(['category', i[8]])
 				
 				
 			else:
@@ -193,7 +193,8 @@ def boot(userid, cmd):
 			room_row = room_controller.get_room(i[5])
 			#Room name
 			sessions_views.rendor(["room", room_row[1]])
-			print("Finished with " + str(len(user_sessions_row)) + " sessions...")
+		#Finished printing results!
+		print("Finished with " + str(len(user_sessions_row)) + " sessions...")
 			
 
 		return
@@ -216,7 +217,7 @@ def boot(userid, cmd):
 					#Display module sessions
 					if (module_row != False) and not isinstance(module_row, str):
 						#Found modules for the course
-
+						print("\n")
 						#Week day
 						sessions_views.rendor(["day", session_rows[2]])
 						#Module name
@@ -228,7 +229,7 @@ def boot(userid, cmd):
 						#Duration
 						sessions_views.rendor(["duration", session_rows[3].split(":"), session_rows[4].split(":")])
 						#Category
-						modules_views.rendor(['category', module_row[2]])
+						sessions_views.rendor(['category', session_rows[8]])
 						
 						
 					else:
@@ -238,9 +239,10 @@ def boot(userid, cmd):
 					room_row = room_controller.get_room(session_rows[5])
 					#Room name
 					sessions_views.rendor(["room", room_row[1]])
-					print("\n")
 	else:
-		print(user_courses_row)
+		#Check wether nothing is found!
+		if user_courses_row == False:
+			print(error_displays.no_course)
 
 
 

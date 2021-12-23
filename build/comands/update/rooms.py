@@ -7,9 +7,6 @@ If current module has no preveleges, nothing is processed
 
 """
 
-#Database
-import config
-
 #Permissions
 from build.users.security import permissions as module_permission
 
@@ -22,6 +19,9 @@ from vendor.views.core import error_prompt as error_displays
 #Shell display messages
 from vendor.views.core import shell_prompts as shell_displays
 
+#Rooms profile
+from build.core.controllers import rooms as room_controller
+
 
 """
 
@@ -29,9 +29,6 @@ from vendor.views.core import shell_prompts as shell_displays
 def boot(moduleid, cmd):
 	#Permissions
 	allow = module_permission.allowed(module_permission.check_permission(moduleid), 'alt')
-
-	conn = config.con #Establish connection to the database!
-	cur = conn.cursor()
 
 	#Validate comand arguments
 	if len(cmd) < 4:
@@ -102,29 +99,21 @@ def boot(moduleid, cmd):
 	#End updating new item profile
 
 	#Item availability!
+	print("Checking room availability...")
+	item_rows = room_controller.get_room(keyw)
 
-	sql = "SELECT id FROM rooms WHERE " + field + "=?"
-
-	cur.execute(sql, [keyw])
-
-	item_rows = cur.fetchall()
-
-	#Is user found!???
-	if len(item_rows) < 1:
+	#Is item found!???
+	if item_rows == False:
 		print(error_displays.no_item)
 		return
 
 	#Check name availability!
 	if 'name' in new_profile:
 		#Name being updated
+		print("Checking room name availability...")
+		item_row = room_controller.search_room(new_profile['name'], 'name')
 
-		sql = '''SELECT id FROM rooms WHERE name=?'''
-
-		cur.execute(sql, [new_profile['name']])
-
-		item_row = cur.fetchall()
-
-		if len(item_row) > 0:
+		if item_row != False:
 			#Name taken
 			print(error_displays.no_name)
 			return
@@ -135,19 +124,16 @@ def boot(moduleid, cmd):
 
 		if field != 'slug':
 			#Field not slug
-			sql = '''SELECT id FROM rooms WHERE slug=?'''
+			print("Checking room slug availability...")
+			item_row = room_controller.search_room(new_profile['slug'], 'slug')
 
-			cur.execute(sql, [new_profile['slug']])
-
-			item_row = cur.fetchall()
-
-			if len(item_row) > 0:
-				#Slug taken
-				print(error_displays.no_slug)
+			if item_row != False:
+				#Name taken
+				print(error_displays.no_name)
 				return
 
 	#All is well, update data
-	item_id = item_rows[0][0]
+	item_id = item_rows[0]
 
 	for i in new_profile:
 		#Loop through arguments passed!
@@ -155,11 +141,10 @@ def boot(moduleid, cmd):
 			#Not id, update data
 			if i != field:
 				print("Updating room " + i + "...")
-				sql = "UPDATE rooms SET " + i + " = ? WHERE id =?"
-				cur.execute(sql, [new_profile[i], item_id])
-				conn.commit()
-				#Updated!
-				print("Room " + i + " updated....")
+				updated = room_controller.update_room(i, new_profile[i], item_id)
+				if updated:
+					#Updated!
+					print("Room " + i + " updated....")
 
 	print("New room profile updated with success")
 

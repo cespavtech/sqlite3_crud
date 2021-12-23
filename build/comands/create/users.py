@@ -125,10 +125,6 @@ def boot(userid, cmd):
 	if user_saved:
 		#Success!
 		print("User created with success...")
-	else:
-		print(user_saved)
-
-	print(new_profile)
 
 
 

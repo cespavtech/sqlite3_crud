@@ -53,6 +53,14 @@ prevs = {
 	#Data to allow assign
 		"ass" : {
 			"all" : 1
+		},
+	#Data to allow admin remove
+		"rem" : {
+			"all" : 1
+		},
+	#Data to allow admins report
+		"rep" : {
+			"all" : 1
 		}
 	},
 
@@ -76,6 +84,14 @@ prevs = {
 		},
 	#Data to allow assign
 		"ass" : {
+			"all" : 0
+		},
+	#Data to allow staff remove
+		"rem" : {
+			"all" : 0
+		},
+	#Data to allow staffs report
+	"rep" : {
 			"all" : 0
 		}
 	},
@@ -104,6 +120,14 @@ prevs = {
 		},
 	#Data to allow assign
 		"ass" : {
+			"all" : 0
+		},
+	#Data to allow students remove
+		"rem" : {
+			"all" : 0
+		},
+	#Data to allow students report
+	"rep" : {
 			"all" : 0
 		}
 	}

@@ -111,6 +111,7 @@ def boot(userid, cmd):
 	#All is well, create new item
 
 	#Update room with id
+	print("Checking room availability...")
 	room_id = room_controller.get_room(new_profile['room'])
 	if room_id == False:
 		#No room found!
@@ -120,6 +121,7 @@ def boot(userid, cmd):
 	new_profile['room'] = room_id[0]
 
 	#Update tutor with id
+	print("Checking user availability...")
 	tutor_id = user_controller.get_profile(new_profile['tutor'])
 	if tutor_id == False:
 		#No data found!
@@ -129,19 +131,58 @@ def boot(userid, cmd):
 	new_profile['tutor'] = tutor_id[0]
 
 	#Update module with id
+	print("Checking module availability...")
 	module_id = module_controller.get_modules(new_profile['module'])
 	if module_id == False:
 		#No data found!
 		print(error_displays.no_item)
 		return
 	#Update with id
-	new_profile['module'] = module_id[0]
+	new_profile['module'] = module_id[0][0]
 
 	#Confirm the selected day exists!
+	print("Confirming selected day...")
 	if not new_profile['day'] in items.week_days:
 		print(error_displays.no_item)
 		return
 	#End confirmation
+
+	#Confirm the user has enough workloads left
+	#Max teaching hours is 18 hours per staff!
+	hours = 0
+	sessions_count = 0
+	user_sessions = user_controller.get_sessions(tutor_id[0]) #Use id to fetch sessions
+	#Do we have anything!
+	if user_sessions == False:
+		#No sessions found for this user
+		pass
+	else:
+		#Found some sessions
+		for i in user_sessions:
+			#Loop through all sessions
+			#Calculate hours spent on each sessions,
+			#Add them and determine the workload for the staff!
+			start = i[3].split(":")
+			end = i[4].split(":")
+			start_time = int(start[0]) + (int(start[1])/60)
+			end_time = int(end[0]) + (int(end[1])/60)
+			if end_time < start_time:
+				end_time = end_time + 12
+			duration = (end_time - start_time)
+			hours = int(hours + duration)
+	#Workload
+	new_start = new_profile['start'].split(":")
+	new_end = new_profile['end'].split(":")
+	new_start_time = int(new_start[0]) + (int(new_start[1])/60)
+	new_end_time = int(new_end[0]) + (int(new_end[1])/60)
+	if new_end_time < new_start_time:
+		new_end_time = new_end_time + 12
+	new_hours = new_end_time - new_start_time
+	hours = int(hours + new_hours)
+
+	if hours >= 18:
+		print(error_displays.no_workload)
+		return
 
 	item_saved = session_controller.save_session([new_profile['tutor'], 
 		new_profile['day'], 
@@ -149,7 +190,8 @@ def boot(userid, cmd):
 		new_profile['end'],
 		new_profile['room'],
 		new_profile['module'],
-		new_profile['slug']])
+		new_profile['slug'],
+		new_profile['cat']])
 
 	#Inform created
 	if item_saved == True:
@@ -158,7 +200,7 @@ def boot(userid, cmd):
 		print(item_saved)
 
 	#Display newly created module data
-	print(new_profile)
+	#print(new_profile)
 
 
 

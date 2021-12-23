@@ -7,9 +7,6 @@ If current user has no preveleges, nothing is processed
 
 """
 
-#Database
-import config
-
 #Permissions
 from build.users.security import permissions as user_permission
 
@@ -24,6 +21,12 @@ from vendor.views.core import shell_prompts as shell_displays
 
 #Shell clobal options [e.g. q/Q for quit]
 from build.core import shell_options as shell_choice
+
+#User profile and id
+from build.core.controllers import users as user_controller
+
+#Course profile
+from build.core.controllers import courses as course_controller
 
 
 """
@@ -93,49 +96,31 @@ def boot(userid, cmd):
 
 	#Check course name availability
 
-	conn = config.con #Establish connection to the database!
-	cur = conn.cursor()
-
 	#Check name availability!
+	print("Checking course name availability...")
+	item_row = course_controller.get_courses(new_profile['name'], 'name')
 
-	sql = '''SELECT id FROM courses WHERE name=?'''
-
-	cur.execute(sql, [new_profile['name']])
-
-	item_row = cur.fetchall()
-
-	if len(item_row) > 0:
+	if item_row != False:
 		#Name taken
 		print(error_displays.no_name)
 		return
 
 	#Check slug availability!
+	print("Checking course slug availability...")
+	item_row = course_controller.get_courses(new_profile['slug'], 'slug')
 
-	sql = '''SELECT id FROM courses WHERE slug=?'''
-
-	cur.execute(sql, [new_profile['slug']])
-
-	item_row = cur.fetchall()
-
-	if len(item_row) > 0:
-		#Slug taken
-		print(error_displays.no_slug)
+	if item_row != False:
+		#Name taken
+		print(error_displays.no_name)
 		return
 
 	#All is well, create new course
 
-	sql = '''INSERT INTO courses(name, slug)
-	VALUES(?,?)'''
 
-	cur.execute(sql, [new_profile['name'], new_profile['slug']])
-
-	conn.commit()
-
-	#Inform created
-	print("New course created with success")
-
-	#Display newly created course data
-	print(new_profile)
+	saved = course_controller.save_course([new_profile['name'], new_profile['slug']])
+	if saved:
+		#Inform created
+		print("New course created with success")
 
 
 

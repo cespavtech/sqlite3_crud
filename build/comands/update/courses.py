@@ -22,6 +22,9 @@ from vendor.views.core import error_prompt as error_displays
 #Shell display messages
 from vendor.views.core import shell_prompts as shell_displays
 
+#Course profile
+from build.core.controllers import courses as course_controller
+
 
 """
 
@@ -102,29 +105,28 @@ def boot(moduleid, cmd):
 	#End updating new item profile
 
 	#Item availability!
-
-	sql = "SELECT id FROM courses WHERE " + field + "=?"
-
-	cur.execute(sql, [keyw])
-
-	item_rows = cur.fetchall()
+	print("Checking course availability...")
+	item_rows = course_controller.get_courses(keyw, field)
 
 	#Is course found!???
+	if item_rows == False:
+		print(error_displays.no_item)
+		return
+
 	if len(item_rows) < 1:
 		print(error_displays.no_item)
 		return
 
+	#Course is found!
+	print("Course found...")
+
 	#Check name availability!
 	if 'name' in new_profile:
 		#Name being updated
+		print("Checking course name availability...")
+		item_row = course_controller.get_courses(new_profile['name'], 'name')
 
-		sql = '''SELECT id FROM courses WHERE name=?'''
-
-		cur.execute(sql, [new_profile['name']])
-
-		item_row = cur.fetchall()
-
-		if len(item_row) > 0:
+		if item_row != False:
 			#Name taken
 			print(error_displays.no_name)
 			return
@@ -135,13 +137,10 @@ def boot(moduleid, cmd):
 
 		if field != 'slug':
 			#Field not slug
-			sql = '''SELECT id FROM courses WHERE slug=?'''
+			print("Checking course slug availability...")
+			item_row = course_controller.get_courses(new_profile['slug'], 'slug')
 
-			cur.execute(sql, [new_profile['slug']])
-
-			item_row = cur.fetchall()
-
-			if len(item_row) > 0:
+			if litem_row != False:
 				#Slug taken
 				print(error_displays.no_slug)
 				return
@@ -155,11 +154,10 @@ def boot(moduleid, cmd):
 			#Not id, update data
 			if i != field:
 				print("Updating course " + i + "...")
-				sql = "UPDATE courses SET " + i + " = ? WHERE id =?"
-				cur.execute(sql, [new_profile[i], item_id])
-				conn.commit()
-				#Updated!
-				print("Course " + i + " updated....")
+				updated = course_controller.update_course(i, new_profile[i], item_id)
+				if updated:
+					#Updated!
+					print("Course " + i + " updated....")
 
 	print("New course profile updated with success")
 

@@ -23,8 +23,9 @@ def get_courses(key, where = "id"):
 			return False
 		return row
 	except Exception as e:
-		print(e)
-		return e
+		if e != False:
+			print(e)
+		return False
 
 def get_modules(course):
 	sql = '''SELECT * FROM modules WHERE course=?'''
@@ -36,7 +37,32 @@ def get_modules(course):
 			return False
 		return row
 	except Exception as e:
-		print(e)
-		return e
+		if e != False:
+			print(e)
+		return False
+
+def update_course(update, new_data, course_id):
+	sql = "UPDATE courses SET " + update + " = ? WHERE id =?"
+	try:
+		cur.execute(sql, [new_data, course_id])
+		row = cur.fetchall()
+		if len(row) < 1:
+			#Nothing found!
+			return False
+		return row
+	except Exception as e:
+		if e != False:
+			print(e)
+		return False
+
+def save_course(data):
+	sql = '''INSERT INTO courses(name, slug) VALUES(?,?)'''
+	try:
+		cur.execute(sql, data)
+		return True
+	except Exception as e:
+		if e != False:
+			print(e)
+		return False
 	
 

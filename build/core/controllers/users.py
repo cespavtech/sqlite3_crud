@@ -26,7 +26,9 @@ def get_profile(key):
 			return False
 		return row[0]
 	except Exception as e:
-		return e
+		if e != False:
+			print(e)
+		return False
 
 def get_courses(user):
 	sql = """SELECT * FROM user_courses WHERE uid=?"""
@@ -38,7 +40,9 @@ def get_courses(user):
 			return False
 		return row
 	except Exception as e:
-		return e
+		if e != False:
+			print(e)
+		return False
 
 def get_sessions(user):
 	sql = """SELECT * FROM sessions WHERE tutor=?"""
@@ -50,7 +54,9 @@ def get_sessions(user):
 			return False
 		return row
 	except Exception as e:
-		return e
+		if e != False:
+			print(e)
+		return False
 
 def save_user(data):
 	#Save new user account
@@ -61,4 +67,55 @@ def save_user(data):
 		conn.commit()
 		return True
 	except Exception as e:
-		return e
+		if e != False:
+			print(e)
+		return False
+
+def update_user(update, new_data, user_id):
+	#Update user profile data
+	sql = "UPDATE users SET " + update + " = ? WHERE id =?"
+	try:
+		cur.execute(sql, [new_data, user_id])
+		conn.commit()
+		return True
+	except Exception as e:
+		if e != False:
+			print(e)
+		return False
+
+
+def save_course(data):
+	sql = "INSERT INTO user_courses(uid, course, date_added) VALUES(?,?,?)"
+	try:
+		cur.execute(sql, data)
+		conn.commit()
+		return True
+	except Exception as e:
+		if e != False:
+			print(e)
+		return False
+
+
+def remove_course(user, course):
+	sql = "DELETE FROM user_courses WHERE uid=? AND course=?"
+	try:
+		cur.execute(sql, [user, course])
+		conn.commit()
+		return True
+	except Exception as e:
+		if e != False:
+			print(e)
+		return False
+
+
+
+def remove_session(user, session):
+	sql = "DELETE FROM sessions WHERE tutor=? AND id=?"
+	try:
+		cur.execute(sql, [user, session])
+		conn.commit()
+		return True
+	except Exception as e:
+		if e != False:
+			print(e)
+		return False

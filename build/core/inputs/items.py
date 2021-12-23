@@ -28,7 +28,9 @@ _windows = {
 	"create" : "new",
 	"update" : "alt",
 	"delete" : "del",
-	"assign" : "ass"
+	"assign" : "ass",
+	"report" : "rep",
+	"remove" : "rem"
 }
 
 
@@ -100,13 +102,13 @@ item_fields = {
 	"s" : {
 		"si" : "id",
 		"st" : "tutor",
-		"ss" : "start",
+		"sb" : "start",
 		"se" : "end",
 		"sd" : "day",
 		"sr" : "room",
 		"sm" : "module",
 		"sc" : "cat",
-		"slug" : "slug"
+		"ss" : "slug"
 	}
 }
 
@@ -127,4 +129,19 @@ week_days = {
 	"wed" : "Wednusday",
 	"thu" : "Thursday",
 	"fri" : "Friday"
+}
+
+
+"""
+====================
+Event Categories
+====================
+We will use this to display the event category for sessions
+
+
+"""
+
+event_category = {
+	"1" : "On Campus Workshop",
+	"2" : "Off Campus Workshop"
 }

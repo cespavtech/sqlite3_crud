@@ -25,6 +25,10 @@ from vendor.views.core import shell_prompts as shell_displays
 #Password handling
 from passlib.hash import bcrypt
 
+#User profile 
+from build.core.controllers import users as user_controller
+
+
 """
 
 """
@@ -96,20 +100,20 @@ def boot(userid, cmd):
 	cur = conn.cursor()
 
 	#Check user availability!
-
-	sql = "SELECT id FROM users WHERE " + field + "=?"
-
-	cur.execute(sql, [keyw])
-
-	user_row = cur.fetchall()
+	print("Checking user availability...")
+	user_row = user_controller.get_profile(keyw)
 
 	#Is user found!???
+	if user_row == False:
+		print(error_displays.no_account)
+		return
 	if len(user_row) < 1:
 		print(error_displays.no_account)
 		return
 
 
 	#User is found!
+	print("User found...")
 
 	#New user profile
 	new_profile = {}
@@ -135,6 +139,7 @@ def boot(userid, cmd):
 	#Check wether user account type is being changed
 	if 'account' in new_profile:
 		#Accoutn is being updated!
+		print("Checking account type availability...")
 		new_account = new_profile['account']
 		if not new_account in user_permission.prevs:
 			print(error_displays.invalid_account_type)
@@ -142,12 +147,13 @@ def boot(userid, cmd):
 
 	#Check wether password is being updated
 	if 'password' in new_profile:
+		print("Encrypting new user password...")
 		#Password being updated, hash new password before update
 		hashed_password = hasher.hash(new_profile['password'])
 		new_profile['password'] = hashed_password
 
 	#Start profile data updating
-	user_id = user_row[0][0]
+	user_id = user_row[0]
 
 	for i in new_profile:
 		#Loop through arguments passed!
@@ -155,11 +161,10 @@ def boot(userid, cmd):
 			#Not id, update data
 			if i != field:
 				print("Updating user " + i + "...")
-				sql = "UPDATE users SET " + i + " = ? WHERE id =?"
-				cur.execute(sql, [new_profile[i], user_id])
-				conn.commit()
-				#Updated!
-				print("User " + i + " updated....")
+				updated = user_controller.update_user(i, new_profile[i], user_id)
+				if updated:
+					#Updated!
+					print("User " + i + " updated....")
 
 	print("New user profile updated successfully!")
 

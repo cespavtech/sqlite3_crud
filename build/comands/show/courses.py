@@ -7,9 +7,6 @@ If current user has no preveleges, nothing is shown
 
 """
 
-#Database
-import config
-
 #Permissions
 from build.users.security import permissions as user_permission
 
