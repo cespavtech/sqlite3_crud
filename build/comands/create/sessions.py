@@ -132,7 +132,7 @@ def boot(userid, cmd):
 
 	#Update module with id
 	print("Checking module availability...")
-	module_id = module_controller.get_modules(new_profile['module'])
+	module_id = module_controller.guess_modules(new_profile['module'])
 	if module_id == False:
 		#No data found!
 		print(error_displays.no_item)
